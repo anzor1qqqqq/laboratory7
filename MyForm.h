@@ -131,7 +131,7 @@ namespace $safeprojectname$ {
 			this->Controls->Add(this->statusLesson);
 			this->Controls->Add(this->time);
 			this->Name = L"MyForm";
-			this->Text = L"MyForm";
+			this->Text = L"Отображение текущей пары";
 			this->Load += gcnew System::EventHandler(this, &MyForm::MyForm_Load);
 			this->ResumeLayout(false);
 			this->PerformLayout();
@@ -144,55 +144,6 @@ namespace $safeprojectname$ {
 	}
 	private: void LogicForWeekDays() {
 		System::DateTime date = DateTime::Now;
-
-		//напиши логиу здесь
-	}
-	private: void LogicForWeekendDays() {
-		statusLesson->Text = "Выходной";
-		statusLesson->ForeColor = System::Drawing::Color::Red;
-	}
-	private: String^ GetDaysOfWeek() {
-		String^ week;
-
-		switch (DateTime::Now.DayOfWeek) {
-			case DayOfWeek::Monday: week = "понедельник"; break;
-			case DayOfWeek::Tuesday: week = "вторник"; break;
-			case DayOfWeek::Wednesday: week = "среда"; break;
-			case DayOfWeek::Thursday: week = "четверг"; break;
-			case DayOfWeek::Friday: week = "пятница"; break;
-			case DayOfWeek::Saturday: week = "суббота"; break;
-			case DayOfWeek::Sunday: week = "воскресенье"; break;
-		}
-
-		return week;
-	}
-
-	private: void DisplayStatusInfo(String^ status) {
-		statusLesson->Text = status;
-	}
-	private: void LoadData() {
-		System::DateTime date = DateTime::Now;
-
-		time->Text = DateTime::Now.ToString("HH:mm:ss");
-		dayOfWeek->Text = this->GetDaysOfWeek();
-
-		if (this->GetDaysOfWeek() == "суббота" || this->GetDaysOfWeek() == "воскресенье") {
-			this->LogicForWeekendDays();
-
-			return;
-		};
-
-		if (date.Hour >= 20 || date.Hour < 9) {
-			if (date.Hour == 20 && date.Minute >= 20) {
-				this->LogicForNotLessonTime();
-
-				return;
-			}
-
-			this->LogicForNotLessonTime();
-
-			return;
-		}
 
 		int currentHour = date.Hour;
 		int currentMinute = date.Minute;
@@ -224,23 +175,54 @@ namespace $safeprojectname$ {
 		};
 
 		for (const auto& item : schedule) {
-			string start = to_string(item.startHour) + to_string(item.startMinute);
-			string end = to_string(item.endHour) + to_string(item.endMinute);
+			int endTime = item.endHour * 100 + item.endMinute;
+			int currTime = currentHour * 100 + currentMinute;
 
-			string currrent = to_string(currentHour) + to_string(currentMinute);
+			if (endTime - currTime > 0) {
+				statusLesson->Text = gcnew System::String(item.name.c_str());
 
-			if (stoi(start) - stoi(currrent) > 0) {
-				this->DisplayStatusInfo(gcnew System::String(item.name.c_str()));
-				return;
-			}
-
-			if (stoi(end) - stoi(currrent) > 0) {
-				this->DisplayStatusInfo(gcnew System::String(item.name.c_str()));
 				return;
 			}
 		}
+	}
+	private: void LogicForWeekendDays() {
+		statusLesson->Text = "Выходной";
+		statusLesson->ForeColor = System::Drawing::Color::Red;
+	}
+	private: String^ GetDaysOfWeek() {
+		String^ week;
 
-		return;
+		switch (DateTime::Now.DayOfWeek) {
+			case DayOfWeek::Monday: week = "понедельник"; break;
+			case DayOfWeek::Tuesday: week = "вторник"; break;
+			case DayOfWeek::Wednesday: week = "среда"; break;
+			case DayOfWeek::Thursday: week = "четверг"; break;
+			case DayOfWeek::Friday: week = "пятница"; break;
+			case DayOfWeek::Saturday: week = "суббота"; break;
+			case DayOfWeek::Sunday: week = "воскресенье"; break;
+		}
+
+		return week;
+	}
+	private: void LoadData() {
+		System::DateTime date = DateTime::Now;
+
+		time->Text = DateTime::Now.ToString("HH:mm:ss");
+		dayOfWeek->Text = this->GetDaysOfWeek();
+		
+		if (this->GetDaysOfWeek() == "суббота" || this->GetDaysOfWeek() == "воскресенье") {
+			this->LogicForWeekendDays();
+
+			return;
+		};
+
+		if (2020 - date.Hour * 100 + date.Minute < 0) {
+			this->LogicForNotLessonTime();
+
+			return;
+		};
+
+		this->LogicForWeekDays();
 	}	
 	private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) {
 		this->LoadData();
