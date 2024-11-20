@@ -1,25 +1,24 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <msclr/marshal_cppstd.h>
 
 struct ScheduleItem {
-	int startHour;
-	int startMinute;
 	int endHour;
 	int endMinute;
 	std::string name;
 };
 
 namespace $safeprojectname$ {
+	using namespace std;
 
 	using namespace System;
+	using namespace System::Globalization;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
-
-	using namespace std;
 
 	/// <summary>
 	/// Summary for MyForm
@@ -148,30 +147,30 @@ namespace $safeprojectname$ {
 		int currentHour = date.Hour;
 		int currentMinute = date.Minute;
 
-		std::vector<ScheduleItem> schedule = {
-			{9, 0, 9, 45, "I пара"},
-			{9, 45, 9, 50, "Пятиминутка"},
-			{9, 50, 10, 35, "I пара"},
-			{10, 35, 10, 45, "Перемена"},
-			{10, 45, 11, 30, "II пара"},
-			{11, 30, 11, 35, "Пятиминутка"},
-			{11, 35, 12, 20, "II пара"},
-			{12, 20, 13, 0, "Перемена"},
-			{13, 0, 13, 45, "III пара"},
-			{13, 45, 13, 50, "Пятиминутка"},
-			{13, 50, 14, 35, "III пара"},
-			{14, 35, 14, 45, "Перемена"},
-			{14, 45, 15, 30, "IV пара"},
-			{15, 30, 15, 35, "Пятиминутка"},
-			{15, 35, 16, 20, "IV пара"},
-			{16, 20, 16, 30, "Перемена"},
-			{16, 30, 17, 15, "V пара"},
-			{17, 15, 17, 20, "Пятиминутка"},
-			{17, 20, 18, 5, "V пара"},
-			{18, 5, 18, 15, "Перемена"},
-			{18, 15, 19, 15, "VI пара"},
-			{19, 15, 19, 20, "Пятиминутка"},
-			{19, 20, 20, 20, "VI пара"}
+		vector<ScheduleItem> schedule = {
+			{9, 45, "I пара"},
+			{9, 50, "Пятиминутка"},
+			{10, 35, "I пара"},
+			{10, 45, "Перемена"},
+			{11, 30, "II пара"},
+			{11, 35, "Пятиминутка"},
+			{12, 20, "II пара"},
+			{13, 0, "Перемена"},
+			{13, 45, "III пара"},
+			{13, 50, "Пятиминутка"},
+			{14, 35, "III пара"},
+			{14, 45, "Перемена"},
+			{15, 30, "IV пара"},
+			{15, 35, "Пятиминутка"},
+			{16, 20, "IV пара"},
+			{16, 30, "Перемена"},
+			{17, 15, "V пара"},
+			{17, 20, "Пятиминутка"},
+			{18, 5, "V пара"},
+			{18, 15, "Перемена"},
+			{19, 15, "VI пара"},
+			{19, 20, "Пятиминутка"},
+			{20, 20, "VI пара"}
 		};
 
 		for (const auto& item : schedule) {
@@ -190,19 +189,11 @@ namespace $safeprojectname$ {
 		statusLesson->ForeColor = System::Drawing::Color::Red;
 	}
 	private: String^ GetDaysOfWeek() {
-		String^ week;
+		DateTime now = DateTime::Now;
+		CultureInfo^ culture = gcnew System::Globalization::CultureInfo("ru-RU");
+		String^ dayOfWeek = now.ToString("dddd", culture);
 
-		switch (DateTime::Now.DayOfWeek) {
-			case DayOfWeek::Monday: week = "понедельник"; break;
-			case DayOfWeek::Tuesday: week = "вторник"; break;
-			case DayOfWeek::Wednesday: week = "среда"; break;
-			case DayOfWeek::Thursday: week = "четверг"; break;
-			case DayOfWeek::Friday: week = "пятница"; break;
-			case DayOfWeek::Saturday: week = "суббота"; break;
-			case DayOfWeek::Sunday: week = "воскресенье"; break;
-		}
-
-		return week;
+		return dayOfWeek;
 	}
 	private: void LoadData() {
 		System::DateTime date = DateTime::Now;
@@ -216,7 +207,7 @@ namespace $safeprojectname$ {
 			return;
 		};
 
-		if (2020 - date.Hour * 100 + date.Minute < 0) {
+		if (2020 - date.Hour * 100 + date.Minute < 0 || 900 - date.Hour * 100 + date.Minute > 0) {
 			this->LogicForNotLessonTime();
 
 			return;
