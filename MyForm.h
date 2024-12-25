@@ -207,7 +207,12 @@ namespace $safeprojectname$ {
 			return;
 		};
 
-		if (2020 - date.Hour * 100 + date.Minute < 0 || 900 - date.Hour * 100 + date.Minute > 0) {
+		const int a = 2020;
+		const int b = date.Hour;
+		const int c = date.Minute;
+		const int res = a - (b * 100 + c);
+
+		if (2020 - (date.Hour * 100 + date.Minute) < 0 || 900 - date.Hour * 100 + date.Minute > 0) {
 			this->LogicForNotLessonTime();
 
 			return;
